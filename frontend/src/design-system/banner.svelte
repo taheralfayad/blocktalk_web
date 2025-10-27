@@ -1,5 +1,11 @@
-<div class="p-4 max-w-24 border-2 border-black rounded-md flex items-center justify-center">
+<script>
+
+let { text } = $props();
+
+</script>
+
+<div class="px-4 py-4 h-full outline-2 rounded-md flex items-center justify-center">
   <h1>
-    BlockTalk
+    {text} 
   </h1>
 </div>
