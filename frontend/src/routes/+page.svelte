@@ -11,7 +11,8 @@
       container: 'map',
       style: 'https://tiles.openfreemap.org/styles/liberty',
       center: [-0.1276, 51.5072],
-      zoom: 10
+      zoom: 10,
+      attributionControl: false
     });
 
     const handleMovement = debounce(() => {
@@ -41,6 +42,7 @@
 
 </script>
 
-<Header/>
-
-<div id="map" class="max-h-svh max-w-screen"></div>
+<div class="flex flex-col h-screen">
+  <Header />
+  <div id="map" class="flex-1 w-full"></div>
+</div>
