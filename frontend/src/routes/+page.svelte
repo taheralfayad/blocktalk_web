@@ -3,8 +3,14 @@
   import debounce from 'lodash/debounce';
   import { onMount } from 'svelte';
   import maplibregl from 'maplibre-gl';
+  import {getDistance, getLocationSearchValue} from '../states/searchBarState.svelte.js'
 
   let map;
+
+  async function retrieveFeed() {
+    console.log(distance)
+    console.log(location)
+  }
 
   onMount(() => {
     map = new maplibregl.Map({
@@ -27,6 +33,9 @@
       console.log("South:", south);
       console.log("West:", west);
 
+      console.log(getDistance())
+      console.log(getLocationSearchValue())
+
     }, 1500);
 
     map.on('zoomend', () => {
@@ -37,12 +46,11 @@
       handleMovement();
     });
 
-
   });
 
 </script>
 
 <div class="flex flex-col h-screen">
-  <Header />
+  <Header/>
   <div id="map" class="flex-1 w-full"></div>
 </div>

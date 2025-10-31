@@ -1,39 +1,39 @@
 <script>
   import { PUBLIC_BACKEND_URL } from '$env/static/public';
+  import {getDistance, getLocationSearchValue, setDistance, setLocationSearchValue} from '../states/searchBarState.svelte.js';
 
-  let suggestionsHidden = true;
-  let suggestions = [];
-  let searchValue = '';
+  let suggestions = $state([]);
+  let distanceValue = $state(getDistance());
+  let searchValue = $state(getLocationSearchValue());
+  const suggestionsHidden = $derived(suggestions.length === 0);
 
-  let distance = '';
-
-  let distances = {
+  const distances = {
     '10mi': 10,
     '15mi': 15,
     '20mi': 20,
     '25mi': 25
-  }
+  };
+
+  $effect(() => {
+    setDistance(distanceValue);
+    setLocationSearchValue(searchValue);
+  });
 
   async function handleInput(event) {
-    searchValue = event.target.value;
+    setLocationSearchValue(event.target.value);
 
     if (searchValue.length > 3) {
-      const response = await fetch(`${PUBLIC_BACKEND_URL}/retrieve-city?city=${searchValue}`);
-
+      const response = await fetch(`${PUBLIC_BACKEND_URL}/retrieve-city?city=${getLocationSearchValue()}`);
       const data = await response.json();
-
       suggestions = data;
-
-      suggestionsHidden = suggestions.length === 0;
-
-
+    } else {
+      suggestions = [];
     }
-    
   }
 
   function selectCity(suggestion) {
-    searchValue = suggestion;
-    suggestionsHidden = true;
+    setLocationSearchValue(suggestion)
+    searchValue = suggestion
     suggestions = [];
   }
 
@@ -42,12 +42,13 @@
 <div class="relative inline-block">
   <div class="border-2 border-black rounded-lg flex justify-start items-center p-2 w-full bg-white box-border">
     <select
+      bind:value={distanceValue}
     >
       {#each Object.entries(distances) as [label, value]}
         <option value={value}>{label}</option>
       {/each}
     </select>
-    <input class="border-none focus:outline-none focus:ring-0 flex-1 w-9/10" on:input={handleInput} bind:value={searchValue} />
+    <input class="border-none focus:outline-none focus:ring-0 flex-1 w-9/10" oninput={handleInput} bind:value={searchValue} />
   </div>
 
   {#if !suggestionsHidden}
@@ -55,7 +56,7 @@
       {#each suggestions as suggestion}
         <li
           class="px-2 py-1 hover:bg-gray-100 cursor-pointer"
-          on:click={() => selectCity(suggestion)}
+          onclick={() => selectCity(suggestion)}
         >
           {suggestion}
         </li>
