@@ -19,6 +19,16 @@
     setLocationSearchValue(searchValue);
   });
 
+  async function retrieveFeed() {
+      const response = await fetch(`${PUBLIC_BACKEND_URL}/feed?location=${getLocationSearchValue()}&distance=${getDistance()}`);
+
+      if (response.ok) {
+        const data = await response.json();
+
+        console.log(data);
+      }
+  }
+
   async function handleInput(event) {
     setLocationSearchValue(event.target.value);
 
@@ -31,9 +41,10 @@
     }
   }
 
-  function selectCity(suggestion) {
-    setLocationSearchValue(suggestion)
-    searchValue = suggestion
+  async function selectCity(suggestion) {
+    setLocationSearchValue(suggestion);
+    searchValue = suggestion;
+    await retrieveFeed();
     suggestions = [];
   }
 

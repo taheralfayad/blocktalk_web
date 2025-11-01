@@ -3,20 +3,16 @@
   import debounce from 'lodash/debounce';
   import { onMount } from 'svelte';
   import maplibregl from 'maplibre-gl';
-  import {getDistance, getLocationSearchValue} from '../states/searchBarState.svelte.js'
+  import {getDistance, getLocationSearchValue} from '../states/searchBarState.svelte.js';
+  import {getFeed, setFeed} from '../states/feed.svelte.js';
 
   let map;
-
-  async function retrieveFeed() {
-    console.log(distance)
-    console.log(location)
-  }
 
   onMount(() => {
     map = new maplibregl.Map({
       container: 'map',
       style: 'https://tiles.openfreemap.org/styles/liberty',
-      center: [-0.1276, 51.5072],
+      center: [-81.3792, 28.5383],
       zoom: 10,
       attributionControl: false
     });
@@ -51,6 +47,6 @@
 </script>
 
 <div class="flex flex-col h-screen">
-  <Header/>
+  <Header />
   <div id="map" class="flex-1 w-full"></div>
 </div>
