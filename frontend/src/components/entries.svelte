@@ -35,7 +35,7 @@
           Participate
         </button>
         <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-semibold">
-          Login
+          <a href="/login">Login</a>
         </button>
       </div>
     </div>
