@@ -1,7 +1,7 @@
 <script>
   import { PUBLIC_BACKEND_URL } from '$env/static/public';
-  import left from '$lib/assets/left.svg';
   import Input from '../../components/login/input.svelte';
+  import Retvrn from '../../components/retvrn.svelte';
 
   let isLogin = $state(true);
   let username = $state("");
@@ -14,12 +14,47 @@
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    let data = {}
+  
+    if (isLogin) {
+      data = {
+        "username": username,
+        "password": password
+      }
+
+      const options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(data)
+
+      };
+
+      const response = fetch(
+        `${PUBLIC_BACKEND_URL}/login`, options
+      ).then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.json()
+      }).then(data => {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
+        localStorage.setItem("expires_at", data.expires_at);
+      })
+
+      return
+    }
+
     if (!isLogin && password !== confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
 
-    const data = {
+    data = {
       'username': username,
       'first_name': firstName,
       'last_name': lastName,
@@ -45,9 +80,10 @@
       }
       return response.json();
     }).then(data => {
-      console.log("Success", data);
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+      localStorage.setItem("expires_at", data.expires_at);
     })
-
   }
 
   function toggleMode() {
@@ -59,9 +95,7 @@
 </script>
 
 <div> 
-  <a href="/">
-    <img class="mt-2 mr-8 max-h-8 max-w-8" src={left}/>
-  </a>
+  <Retvrn/>
   <div class="min-h-screen bg-white flex items-center justify-center p-4">
     <div class="w-full max-w-md">
       <div class="border border-black p-8">

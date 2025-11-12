@@ -1,5 +1,6 @@
 <script>
-  import Header from '../components/header.svelte'
+  import { PUBLIC_BACKEND_URL } from '$env/static/public';
+  import Header from '../components/header.svelte';
   import debounce from 'lodash/debounce';
   import { onMount } from 'svelte';
   import maplibregl from 'maplibre-gl';
@@ -8,7 +9,35 @@
 
   let map;
 
+  let refreshToken = async () => {
+    const data = {
+      'refresh_token': localStorage.getItem('refresh_token')
+    }
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    };
+
+    const response = fetch(
+      `${PUBLIC_BACKEND_URL}/refresh-token`, options
+    ).then(response => {
+      if(!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return response.json();
+    }).then(data => {
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("expires_at", data.expires_at);
+    });
+  }
+
   onMount(() => {
+    refreshToken();
     map = new maplibregl.Map({
       container: 'map',
       style: 'https://tiles.openfreemap.org/styles/liberty',

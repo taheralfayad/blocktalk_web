@@ -1,9 +1,18 @@
 <script>
   import rightArrow from '$lib/assets/right.svg';
-  export let entriesShown = { shown: false };
+  let { entriesShown } = $props();
   const closeMenu = () => {
     entriesShown.shown = false;
   };
+  let isLoggedIn = $state(false);
+
+  $effect(() => {
+    if (localStorage.getItem("access_token")){
+      isLoggedIn = true;
+    }
+  })
+
+
 </script>
 
 {#if entriesShown.shown}
@@ -31,9 +40,11 @@
         <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors">
           About
         </button>
-        <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors">
-          Participate
-        </button>
+        {#if isLoggedIn}
+          <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors">
+            <a href="/create-entry"> Participate</a>
+          </button>
+        {/if}
         <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-semibold">
           <a href="/login">Login</a>
         </button>
