@@ -1,12 +1,20 @@
 <script>
+  import { PUBLIC_BACKEND_URL } from '$env/static/public';
+  import Entry from '../components/entry.svelte';
   import rightArrow from '$lib/assets/right.svg';
+  import { getDistance, getLocationSearchValue } from '../states/searchBarState.svelte.js';
+  import { getFeed } from '../states/feed.svelte.js';
+
   let { entriesShown } = $props();
+  let feed = $state('');
+
   const closeMenu = () => {
     entriesShown.shown = false;
   };
   let isLoggedIn = $state(false);
 
   $effect(() => {
+    feed = getFeed();
     if (localStorage.getItem("access_token")){
       isLoggedIn = true;
     }
@@ -23,17 +31,19 @@
     ></div>
     <div class="w-2/5 bg-white h-full relative shadow-lg flex flex-col">
       <button
-        class="absolute top-2 right-2 hover:cursor-pointer"
+        class="hover:cursor-pointer"
         on:click={closeMenu}
       >
         <img class="max-h-8 max-w-8" src={rightArrow} alt="Close" />
       </button>
       <div class="p-4 flex flex-col flex-1 overflow-y-auto">
-        <h2 class="text-xl font-semibold">Feed</h2>
-        <h1> something </h1>
-        <h1> something </h1>
-        <h1> something </h1>
-        <h1> something </h1>
+        {#each feed as item }
+          <Entry
+            title={item.title}
+            address={item.address}
+            content={item.content} 
+          />
+        {/each}
       </div>
       
       <div class="border-t border-gray-200">

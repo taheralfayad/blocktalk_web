@@ -6,6 +6,7 @@
   import maplibregl from 'maplibre-gl';
   import {getDistance, getLocationSearchValue} from '../states/searchBarState.svelte.js';
   import {getFeed, setFeed} from '../states/feed.svelte.js';
+  import { initMap, getMap } from '../states/map.svelte.js';
 
   let map;
 
@@ -38,13 +39,7 @@
 
   onMount(() => {
     refreshToken();
-    map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://tiles.openfreemap.org/styles/liberty',
-      center: [-81.3792, 28.5383],
-      zoom: 10,
-      attributionControl: false
-    });
+    initMap('map');
 
     const handleMovement = debounce(() => {
       const bounds = map.getBounds();
@@ -52,6 +47,35 @@
       const east = bounds.getEast();
       const south = bounds.getSouth();
       const west = bounds.getWest();
+
+      const data = {
+        north: north,
+        south: south,
+        east: east,
+        west: west
+      }
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }
+
+      const response = fetch(
+        `${PUBLIC_BACKEND_URL}/retrieve-entries-within-visible-bounds`,
+        options
+      ).then(response => {
+        if(!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        return response.json()
+      }).then(data => {
+        console.log(data);
+        setFeed(data);
+      })
 
       console.log("North:", north);
       console.log("East:", east);
@@ -70,6 +94,8 @@
     map.on('moveend', () => {
       handleMovement();
     });
+
+    handleMovement();
 
   });
 
