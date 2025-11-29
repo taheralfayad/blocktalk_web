@@ -17,10 +17,11 @@
   async function retrieveFeed() {
       const response = await fetch(`${PUBLIC_BACKEND_URL}/feed?location=${getLocationSearchValue()}&distance=${getDistance()}`);
 
-      if (response.ok) {
-        const data = await response.json();
 
-        console.log(data);
+      if (response.ok && response.status !== 204) {
+        const data = await response.json();
+        
+        console.log(data)
       }
   }
 
@@ -45,12 +46,12 @@
     let map = getMap();
     map.flyTo({
       center: [suggestionObject.lng, suggestionObject.lat],
-      zoom: 12,
-      speed: 1.2,    // animation speed
-      curve: 1.42    // smoothness
+      zoom: 10,
+      speed: 3.0,
+      curve: 1.42
     });
-    setLocationSearchValue(suggestion);
-    searchValue = suggestion;
+    setLocationSearchValue(suggestionName);
+    searchValue = suggestionName;
     await retrieveFeed();
     suggestions = [];
   }
@@ -61,7 +62,7 @@
   suggestionsHidden={suggestionsHidden}
   suggestions={suggestions.map(suggestion => suggestion.city)}
   handleInput={handleInput}
-  selectCity={selectCity}
+  selectSuggestion={selectCity}
   bind:searchValue={searchValue}
 />
 

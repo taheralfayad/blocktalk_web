@@ -41,6 +41,8 @@
     refreshToken();
     initMap('map');
 
+    let map = getMap();
+
     const handleMovement = debounce(() => {
       const bounds = map.getBounds();
       const north = bounds.getNorth();
@@ -71,9 +73,12 @@
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 
+        if (response.status === 204){
+          return []
+        }
+
         return response.json()
       }).then(data => {
-        console.log(data);
         setFeed(data);
       })
 

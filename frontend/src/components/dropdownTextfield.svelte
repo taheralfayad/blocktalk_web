@@ -1,16 +1,24 @@
 <script>
+  import Input from '../components/input.svelte';
   let {
     suggestionsHidden,
     suggestions,
     handleInput,
-    selectCity,
+    selectSuggestion,
     searchValue = $bindable()
   } = $props();
 </script>
 
 <div class="relative inline-block">
-  <div class="border-2 border-black rounded-lg flex justify-start items-center p-2 w-full bg-white box-border">
-    <input class="border-none focus:outline-none focus:ring-0 flex-1 w-9/10" oninput={handleInput} bind:value={searchValue} />
+  <div class="rounded-lg flex justify-start items-center p-2 w-full bg-white box-border">
+    <Input
+      bind:value={searchValue}
+      id="searchBar"
+      required
+      aria-required="true"
+      placeholder="Find a City"
+      handleInput={handleInput}
+    />
   </div>
 
   {#if !suggestionsHidden}
@@ -18,7 +26,7 @@
     {#each suggestions as suggestion}
       <li
         class="px-2 py-1 hover:bg-gray-100 cursor-pointer"
-        onclick={() => selectCity(suggestion)}
+        onclick={() => selectSuggestion(suggestion)}
       >
         {suggestion}
       </li>

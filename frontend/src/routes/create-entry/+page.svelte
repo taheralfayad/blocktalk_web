@@ -3,6 +3,7 @@
   import Retvrn from '../../components/retvrn.svelte';
   import Input from '../../components/input.svelte'
   import SelectInput from '../../components/select.svelte';
+  import DropdownTextfield from '../../components/dropdownTextfield.svelte';
   import Tags from '../../globals/tags.json';
 
   let title = $state('');
@@ -15,6 +16,38 @@
   let error = $state('');
   let success = $state(false);
   let submitting = $state(false);
+  let suggestions = $state([]);
+
+  const suggestionsHidden = $derived(suggestions.length === 0);
+
+  let handleLocationAutosuggestion = async (event) => {
+    if (location.length > 3) {
+      const token = localStorage.getItem('access_token');
+      const authHeader = token;
+      const response = await fetch(
+        `${PUBLIC_BACKEND_URL}/autocomplete-address?query=${location}`, {
+          headers: {
+            ...(authHeader ? { Authorization: authHeader } : {})
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      suggestions = data;
+    }
+  }
+
+  let handleSelectSuggestion = (suggestionName) => {
+    const suggestionObject = suggestions.find(
+      suggestion => suggestion.address == suggestionName
+    );
+
+    location = suggestionObject.address;
+    longitude = suggestionObject.lon;
+    latitude = suggestionObject.lat;
+    suggestions = [];
+  }
 
   let handleSubmit = async () => {
     error = '';
@@ -35,9 +68,7 @@
 
     try {
       const token = localStorage.getItem('access_token');
-      const authHeader = token
-        ? (token.startsWith('Bearer ') ? token : `Bearer ${token}`)
-        : '';
+      const authHeader = token;
 
       const response = await fetch(`${PUBLIC_BACKEND_URL}/create-entry`, {
         method: 'POST',
@@ -103,15 +134,16 @@
           />
         </div>
 
-        <div>
-          <Input
-            bind:value={location}
-            id="location"
-            label="Location"
-            placeholder="Optional — e.g. Elm St. & 5th Ave"
-            class="w-full"
+        <label class="sm:col-span-2">
+          Location *
+          <DropdownTextfield
+            suggestionsHidden={suggestionsHidden}
+            suggestions={suggestions.map(suggestion => suggestion.address)}
+            handleInput={handleLocationAutosuggestion}
+            selectSuggestion={handleSelectSuggestion}
+            bind:searchValue={location}
           />
-        </div>
+        </label>
 
         <div class="sm:col-span-2">
           <Input
