@@ -37,27 +37,47 @@
         <img class="max-h-8 max-w-8" src={rightArrow} alt="Close" />
       </button>
       <div class="p-4 flex flex-col flex-1 overflow-y-auto">
-        {#each feed as item }
-          <Entry
-            title={item.title}
-            address={item.address}
-            content={item.content} 
-          />
-        {/each}
+        {#if feed.length > 0}
+          {#each feed as item }
+            <Entry
+              title={item.title}
+              address={item.address}
+              content={item.content} 
+            />
+          {/each}
+        {:else}
+          <p>
+            No entries found for this area :(
+          </p>
+          <p>
+            You can add some by joining the BlockTalk community as a contributor!
+          </p>
+        {/if}
       </div>
       
       <div class="border-t border-gray-200">
-        <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors">
+        <a
+          href="/about"
+          class="block w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+        >
           About
-        </button>
+        </a>
+
         {#if isLoggedIn}
-          <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors">
-            <a href="/create-entry"> Participate</a>
-          </button>
+          <a
+            href="/create-entry"
+            class="block w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+          >
+            Participate
+          </a>
+        {:else}
+          <a
+            href="/login"
+            class="block w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-semibold"
+          >
+            Login
+          </a>
         {/if}
-        <button class="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors font-semibold">
-          <a href="/login">Login</a>
-        </button>
       </div>
     </div>
   </div>

@@ -8,8 +8,6 @@
   import {getFeed, setFeed} from '../states/feed.svelte.js';
   import { initMap, getMap } from '../states/map.svelte.js';
 
-  let map;
-
   let refreshToken = async () => {
     const data = {
       'refresh_token': localStorage.getItem('refresh_token')
@@ -41,10 +39,10 @@
     refreshToken();
     initMap('map');
 
-    let map = getMap();
+    const mapInstance = getMap();
 
     const handleMovement = debounce(() => {
-      const bounds = map.getBounds();
+      const bounds = mapInstance.getBounds();
       const north = bounds.getNorth();
       const east = bounds.getEast();
       const south = bounds.getSouth();
@@ -81,26 +79,21 @@
       }).then(data => {
         setFeed(data);
       })
-
-      console.log("North:", north);
-      console.log("East:", east);
-      console.log("South:", south);
-      console.log("West:", west);
-
-      console.log(getDistance())
-      console.log(getLocationSearchValue())
-
     }, 1500);
 
-    map.on('zoomend', () => {
+  mapInstance.on('load', () => {
+    mapInstance.resize();
+
+    mapInstance.on('zoomend', () => {
+      handleMovement();
+    });
+    mapInstance.on('moveend', () => {
+      console.log("hello?")
       handleMovement();
     });
 
-    map.on('moveend', () => {
-      handleMovement();
-    });
-
-    handleMovement();
+    handleMovement(); 
+  });
 
   });
 
@@ -108,5 +101,5 @@
 
 <div class="flex flex-col h-screen">
   <Header />
-  <div id="map" class="flex-1 w-full"></div>
+  <div id="map" class="flex-1 min-h-0 min-w-0 relative"></div>
 </div>
