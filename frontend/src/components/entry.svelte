@@ -2,8 +2,28 @@
   let { title, address, content } = $props();
 </script>
 
-<div class="p-4 border rounded-xl shadow-sm bg-white max-h-32 overflow-hidden">
-  <h1 class="text-xl font-semibold text-gray-800">{title}</h1>
-  <h2 class="text-md text-gray-600">{address}</h2>
-  <p class="text-gray-700 text-sm mt-2 leading-snug">{content}</p>
+<div
+  class="group p-4 rounded-xl border border-gray-200 bg-white
+         shadow-sm hover:shadow-md transition-shadow
+         cursor-pointer m-1"
+>
+  <div class="flex flex-col gap-1">
+    <h1
+      class="text-sm font-semibold text-gray-900 leading-snug
+             line-clamp-2"
+    >
+      {title}
+    </h1>
+
+    <h2 class="text-xs text-gray-800">
+      {address}
+    </h2>
+  </div>
+
+  <p
+    class="mt-2 text-sm text-gray-700 leading-relaxed
+           line-clamp-3"
+  >
+    {content}
+  </p>
 </div>

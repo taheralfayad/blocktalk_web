@@ -2,7 +2,7 @@
   import { PUBLIC_BACKEND_URL } from '$env/static/public';
   import Header from '../components/header.svelte';
   import debounce from 'lodash/debounce';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import maplibregl from 'maplibre-gl';
   import {getDistance, getLocationSearchValue} from '../states/searchBarState.svelte.js';
   import {getFeed, setFeed} from '../states/feed.svelte.js';
@@ -81,6 +81,20 @@
       })
     }, 1500);
 
+
+  mapInstance.on('click', (e) => {
+    const { lng, lat } = e.lngLat;
+
+    let token = localStorage.getItem("access_token");
+
+    if (token === null) {
+        console.log("sorry bucko, not allowed");
+        return;
+    }
+
+    console.log('Clicked at:', lng, lat);
+  });
+
   mapInstance.on('load', () => {
     mapInstance.resize();
 
@@ -93,6 +107,10 @@
     });
 
     handleMovement(); 
+  });
+
+  onDestroy(() => {
+    destroyMap();
   });
 
   });

@@ -1,10 +1,8 @@
 import maplibregl from 'maplibre-gl';
 
-let map;
+let map = null;
 
 export function initMap(container) {
-  if (map) return map;
-
   map = new maplibregl.Map({
     container,
     style: 'https://tiles.openfreemap.org/styles/liberty',
@@ -13,9 +11,18 @@ export function initMap(container) {
     attributionControl: false
   });
 
+  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
   return map;
 }
 
 export function getMap() {
   return map;
+}
+
+export function destroyMap() {
+  if (map) {
+    map.remove();
+    map = null;
+  }
 }

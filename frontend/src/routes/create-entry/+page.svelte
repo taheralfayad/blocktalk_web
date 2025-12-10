@@ -4,6 +4,7 @@
   import Input from '../../components/input.svelte'
   import SelectInput from '../../components/select.svelte';
   import DropdownTextfield from '../../components/dropdownTextfield.svelte';
+  import Button from '../../components/button.svelte';
   import Tags from '../../globals/tags.json';
 
   let title = $state('');
@@ -48,6 +49,36 @@
     latitude = suggestionObject.lat;
     suggestions = [];
   }
+
+let handleGetCurrentLocation = async () => {
+  if (!navigator.geolocation) {
+    error = 'Geolocation is not supported by your browser';
+    return;
+  }
+
+  try {
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+
+    const { latitude, longitude } = position.coords;
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    );
+
+    const data = await response.json();
+    location = data.display_name || `${latitude}, ${longitude}`;
+  } catch (err) {
+    console.error('Geolocation error:', err);
+
+    if (err.code === 1) {
+      error = 'Location access denied. Please enable location permissions.'
+    } else {
+      error = 'Unable to get your location. Please try again.'
+    }
+  }
+}
 
   let handleSubmit = async () => {
     error = '';
@@ -115,7 +146,7 @@
       </h1>
     </div>
 
-    <form on:submit|preventDefault={handleSubmit}
+    <form onsubmit={handleSubmit}
           class="bg-white shadow-lg rounded-2xl p-6 sm:p-8 border border-slate-100">
       <p class="text-sm text-slate-500 mb-4">
         Share a short title, location and details. Fields marked with <span class="font-medium">*</span> are required.
@@ -134,16 +165,26 @@
           />
         </div>
 
-        <label class="sm:col-span-2">
-          Location *
-          <DropdownTextfield
-            suggestionsHidden={suggestionsHidden}
-            suggestions={suggestions.map(suggestion => suggestion.address)}
-            handleInput={handleLocationAutosuggestion}
-            selectSuggestion={handleSelectSuggestion}
-            bind:searchValue={location}
-          />
-        </label>
+        <div class="sm:col-span-2">
+          <label for="location" class="block text-sm font-medium text-slate-700 mb-1">
+            Location *
+          </label>
+          <div class="flex flex-row items-start gap-2">
+            <div class="flex-1">
+              <DropdownTextfield
+                suggestionsHidden={suggestionsHidden}
+                suggestions={suggestions.map(suggestion => suggestion.address)}
+                handleInput={handleLocationAutosuggestion}
+                selectSuggestion={handleSelectSuggestion}
+                bind:searchValue={location}
+              />
+            </div>
+            <Button
+              onClick={() => handleGetCurrentLocation()}
+              text="Get Current Location"
+            />
+          </div>
+        </div>
 
         <div class="sm:col-span-2">
           <Input
@@ -215,7 +256,7 @@
           <button
             type="button"
             class="px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 hover:bg-slate-50 hover:cursor-pointer"
-            on:click={() => { title=''; location=''; description=''; progressTag=''; zoningTag=''; error=''; success=false; }}
+            onclick={() => { title=''; location=''; description=''; progressTag=''; zoningTag=''; error=''; success=false; }}
           >
             Reset
           </button>
