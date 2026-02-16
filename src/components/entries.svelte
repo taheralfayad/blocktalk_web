@@ -37,7 +37,13 @@
 			<div class="flex flex-1 flex-col overflow-y-auto p-4">
 				{#if feed.length > 0}
 					{#each feed as item}
-						<Entry title={item.title} address={item.address} content={item.content} />
+						<Entry
+              title={item.title}
+              address={item.address}
+              content={item.content}
+              zoningTag={item.tags.find(tag => tag.classification === "Zoning").name}
+              progressTag={item.tags.find(tag => tag.classification === "Progress").name}
+            />
 					{/each}
 				{:else}
 					<p>No entries found for this area :(</p>

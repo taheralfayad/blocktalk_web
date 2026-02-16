@@ -1,5 +1,5 @@
 <script>
-  let { title, address, content } = $props();
+  let { title, address, content, zoningTag, progressTag } = $props();
 </script>
 
 <div
@@ -26,4 +26,14 @@
   >
     {content}
   </p>
+
+  <div class="flex flex-col">
+    <p class="text-sm text-gray-500 leading-relaxed">
+      Zoning: {zoningTag}
+    </p>
+
+    <p class="text-sm text-gray-500 leading-relaxed">
+      Progress: {progressTag}
+    </p>
+  </div>
 </div>
