@@ -10,30 +10,39 @@
 
   let refreshToken = async () => {
     const data = {
-      'refresh_token': localStorage.getItem('refresh_token')
-    }
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
+      refresh_token: localStorage.getItem("refresh_token"),
     };
 
-    const response = fetch(
-      `${PUBLIC_BACKEND_URL}/refresh-token`, options
-    ).then(response => {
-      if(!response.ok) {
+    try {
+      const response = await fetch(`${PUBLIC_BACKEND_URL}/refresh-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("expires_at");
+
+        console.warn("Refresh token expired. User logged out.");
+        return;
+      }
+
+      if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
-    }).then(data => {
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("expires_at", data.expires_at);
-    });
-  }
+      const result = await response.json();
+
+      localStorage.setItem("access_token", result.access_token);
+      localStorage.setItem("expires_at", result.expires_at);
+    } catch (err) {
+      console.error("Error refreshing token:", err);
+    }
+  };
 
   onMount(() => {
     refreshToken();

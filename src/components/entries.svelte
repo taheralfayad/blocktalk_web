@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import Entry from '../components/entry.svelte';
 	import rightArrow from '$lib/assets/right.svg';
@@ -7,7 +7,7 @@
 	import { fly } from 'svelte/transition';
 
 	let { entriesShown } = $props();
-	let feed = $state([]);
+	let feed: any[] = $state([]);
 
 	const closeMenu = () => {
 		entriesShown.shown = false;
@@ -23,13 +23,15 @@
 </script>
 
 {#if entriesShown.shown}
-	<div class="fixed inset-0 z-50 flex">
-		<div class="flex-1 bg-black opacity-25" on:click={closeMenu}></div>
+	<div
+    class="fixed inset-0 z-50 flex"
+    transition:fly|global
+  >
+		<div class="flex-1 bg-black opacity-25" onclick={closeMenu}></div>
 		<div
-			class="relative flex h-full w-2/5 flex-col bg-white shadow-lg"
-			transition:fly={{ x: 100, duration: 300 }}
+			class="relative flex h-full w-2/5 transform flex-col bg-white shadow-lg"
 		>
-			<button class="hover:cursor-pointer" on:click={closeMenu}>
+			<button class="hover:cursor-pointer" onclick={closeMenu}>
 				<img class="max-h-8 max-w-8" src={rightArrow} alt="Close" />
 			</button>
 			<div class="flex flex-1 flex-col overflow-y-auto p-4">

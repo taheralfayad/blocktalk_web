@@ -1,6 +1,8 @@
 import { getMap } from './map.svelte.js';
 import maplibregl from 'maplibre-gl';
 
+import { addLogoMarker } from "../utils/utils.svelte.js";
+
 let feed = $state([]);
 let activeMarkers = [];
 
@@ -18,9 +20,15 @@ export function setFeed(newFeed) {
 	activeMarkers = [];
 
 	newFeed.forEach((element) => {
-		const marker = new maplibregl.Marker()
-			.setLngLat([element.longitude, element.latitude])
-			.addTo(map);
+    const zoningName = element.tags.find(t => t.classification === "Zoning").name;
+    const progressName = element.tags.find(t => t.classification === "Progress").name;
+    const marker = addLogoMarker(
+      map,
+      element.longitude,
+      element.latitude,
+      zoningName,
+      progressName
+    )
 		activeMarkers.push(marker);
 	});
 

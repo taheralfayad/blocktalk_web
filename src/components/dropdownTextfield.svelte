@@ -40,8 +40,7 @@
           "
           role="option"
           tabindex="0"
-          on:click={() => selectSuggestion(suggestion)}
-          on:keydown={(e) => e.key === 'Enter' && selectSuggestion(suggestion)}
+          onclick={() => selectSuggestion(suggestion)}
         >
           {suggestion}
         </li>

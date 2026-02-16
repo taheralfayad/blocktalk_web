@@ -30,7 +30,9 @@
 		"vite": "^7.1.7"
 	},
 	"dependencies": {
+		"@lucide/svelte": "^0.560.0",
 		"lodash": "^4.17.21",
+		"lucide-svelte": "^0.560.0",
 		"maplibre-gl": "^5.10.0"
 	}
 }
