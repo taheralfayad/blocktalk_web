@@ -28,9 +28,9 @@
     transition:fly|global
   >
 		<div class="flex-1 bg-black opacity-25" onclick={closeMenu}></div>
-		<div
-			class="relative flex h-full w-2/5 transform flex-col bg-white shadow-lg"
-		>
+    <div
+      class="relative flex h-full w-full sm:w-2/5 transform flex-col bg-white shadow-lg"
+    >
 			<button class="hover:cursor-pointer" onclick={closeMenu}>
 				<img class="max-h-8 max-w-8" src={rightArrow} alt="Close" />
 			</button>

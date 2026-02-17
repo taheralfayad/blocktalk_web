@@ -32,5 +32,4 @@ export function setFeed(newFeed) {
 		activeMarkers.push(marker);
 	});
 
-	console.log(activeMarkers);
 }
