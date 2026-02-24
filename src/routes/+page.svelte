@@ -1,11 +1,8 @@
 <script>
-	import { PUBLIC_BACKEND_URL } from '$env/static/public';
 	import Header from '../components/header.svelte';
 	import debounce from 'lodash/debounce';
 	import { onMount, onDestroy } from 'svelte';
-	import maplibregl from 'maplibre-gl';
-	import { getDistance, getLocationSearchValue } from '../states/searchBarState.svelte.js';
-	import { getFeed, setFeed } from '../states/feed.svelte.js';
+	import { setFeed } from '../states/feed.svelte.js';
 	import { initMap, getMap } from '../states/map.svelte.js';
 
 	import { api } from '../utils/api.svelte.js';
@@ -13,12 +10,6 @@
 	let refreshToken = async () => {
 		try {
 			await api.post('/users/refresh-token');
-
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
-			}
-
-			const result = await response.json();
 		} catch (err) {
 			console.error('Error refreshing token:', err);
 		}
@@ -36,18 +27,24 @@
 
 		const mapInstance = getMap();
 
+		const MIN_QUERY_ZOOM = 8;
+
 		const handleMovement = debounce(() => {
+			const zoom = mapInstance.getZoom();
+
+			if (zoom < MIN_QUERY_ZOOM) {
+				console.log('Zoomed out too far — skipping query');
+				setFeed([]);
+				return;
+			}
+
 			const bounds = mapInstance.getBounds();
-			const north = bounds.getNorth();
-			const east = bounds.getEast();
-			const south = bounds.getSouth();
-			const west = bounds.getWest();
 
 			const data = {
-				north: north,
-				south: south,
-				east: east,
-				west: west
+				north: bounds.getNorth(),
+				south: bounds.getSouth(),
+				east: bounds.getEast(),
+				west: bounds.getWest()
 			};
 
 			retrieveEntries(data);
