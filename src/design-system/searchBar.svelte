@@ -4,6 +4,8 @@
   import { getMap } from '../states/map.svelte.js';
   import DropdownTextfield from '../components/dropdownTextfield.svelte';
 
+  import { api } from "../utils/api.svelte.js";
+
   let suggestions = $state([]);
   let distanceValue = $state(getDistance());
   let searchValue = $state(getLocationSearchValue());
@@ -15,8 +17,7 @@
   });
 
   async function retrieveFeed() {
-      const response = await fetch(`${PUBLIC_BACKEND_URL}/feed?location=${getLocationSearchValue()}&distance=${getDistance()}`);
-
+      const response = await api.get(`/entries/feed?location=${getLocationSearchValue()}&distance=${getDistance()}`);
 
       if (response.ok && response.status !== 204) {
         const data = await response.json();
@@ -29,7 +30,7 @@
     setLocationSearchValue(event.target.value);
 
     if (searchValue.length > 3) {
-      const response = await fetch(`${PUBLIC_BACKEND_URL}/retrieve-city?city=${getLocationSearchValue()}`);
+      const response = await api.get(`/entries/retrieve-city?city=${getLocationSearchValue()}`)
       const data = await response.json();
       console.log(data)
       suggestions = data;

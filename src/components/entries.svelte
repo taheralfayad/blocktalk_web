@@ -6,6 +6,8 @@
 	import { getFeed } from '../states/feed.svelte.js';
 	import { fly } from 'svelte/transition';
 
+	import { api } from '../utils/api.svelte.js';
+
 	let { entriesShown } = $props();
 	let feed: any[] = $state([]);
 
@@ -14,23 +16,29 @@
 	};
 	let isLoggedIn = $state(false);
 
+	const getIsLoggedIn = async () => {
+		try {
+			await api.get('/users/me');
+			isLoggedIn = true;
+		} catch (error) {
+			if (error.status === 401) {
+				return false;
+			}
+
+			return false;
+		}
+	};
+
 	$effect(() => {
 		feed = getFeed();
-		if (localStorage.getItem('access_token')) {
-			isLoggedIn = true;
-		}
+		getIsLoggedIn();
 	});
 </script>
 
 {#if entriesShown.shown}
-	<div
-    class="fixed inset-0 z-50 flex"
-    transition:fly|global
-  >
+	<div class="fixed inset-0 z-50 flex" transition:fly|global>
 		<div class="flex-1 bg-black opacity-25" onclick={closeMenu}></div>
-    <div
-      class="relative flex h-full w-full sm:w-2/5 transform flex-col bg-white shadow-lg"
-    >
+		<div class="relative flex h-full w-full transform flex-col bg-white shadow-lg sm:w-2/5">
 			<button class="hover:cursor-pointer" onclick={closeMenu}>
 				<img class="max-h-8 max-w-8" src={rightArrow} alt="Close" />
 			</button>
@@ -38,12 +46,12 @@
 				{#if feed.length > 0}
 					{#each feed as item}
 						<Entry
-              title={item.title}
-              address={item.address}
-              content={item.content}
-              zoningTag={item.tags.find(tag => tag.classification === "Zoning").name}
-              progressTag={item.tags.find(tag => tag.classification === "Progress").name}
-            />
+							title={item.title}
+							address={item.address}
+							content={item.content}
+							zoningTag={item.tags.find((tag) => tag.classification === 'Zoning').name}
+							progressTag={item.tags.find((tag) => tag.classification === 'Progress').name}
+						/>
 					{/each}
 				{:else}
 					<p>No entries found for this area :(</p>
