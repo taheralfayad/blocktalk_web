@@ -3,16 +3,23 @@
 	import Entry from '../components/entry.svelte';
 	import rightArrow from '$lib/assets/right.svg';
 	import { getDistance, getLocationSearchValue } from '../states/searchBarState.svelte.js';
-	import { getFeed } from '../states/feed.svelte.js';
 	import { fly } from 'svelte/transition';
 
 	import { api } from '../utils/api.svelte.js';
 
-	let { entriesShown } = $props();
+	import { getFeedShown, setFeedShown, getFeed, setFeed } from '../states/feed.svelte.js';
+
+	let feedShown = $derived(getFeedShown());
 	let feed: any[] = $state([]);
 
 	const closeMenu = () => {
-		entriesShown.shown = false;
+		const clearedFeed = getFeed().map((item) => ({
+			...item,
+			highlighted: false
+		}));
+
+		setFeed(clearedFeed);
+		setFeedShown(false);
 	};
 	let isLoggedIn = $state(false);
 
@@ -35,7 +42,7 @@
 	});
 </script>
 
-{#if entriesShown.shown}
+{#if feedShown}
 	<div class="fixed inset-0 z-50 flex" transition:fly|global>
 		<div class="flex-1 bg-black opacity-25" onclick={closeMenu}></div>
 		<div class="relative flex h-full w-full transform flex-col bg-white shadow-lg sm:w-2/5">
@@ -51,6 +58,7 @@
 							content={item.content}
 							zoningTag={item.tags.find((tag) => tag.classification === 'Zoning').name}
 							progressTag={item.tags.find((tag) => tag.classification === 'Progress').name}
+							highlighted={item.highlighted ?? false}
 						/>
 					{/each}
 				{:else}

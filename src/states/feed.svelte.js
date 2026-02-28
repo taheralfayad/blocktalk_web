@@ -4,22 +4,23 @@ import maplibregl from 'maplibre-gl';
 import { addLogoMarker } from "../utils/utils.svelte.js";
 
 let feed = $state([]);
+let feedShown = $state(false)
 let activeMarkers = [];
 
 export function getFeed() {
-	return feed;
+  return feed;
 }
 
 export function setFeed(newFeed) {
-	feed = newFeed;
-	const map = getMap();
+  feed = newFeed;
+  const map = getMap();
 
-	activeMarkers.forEach((marker) => {
-		marker.remove();
-	});
-	activeMarkers = [];
+  activeMarkers.forEach((marker) => {
+    marker.remove();
+  });
+  activeMarkers = [];
 
-	newFeed.forEach((element) => {
+  newFeed.forEach((element) => {
     const zoningName = element.tags.find(t => t.classification === "Zoning").name;
     const progressName = element.tags.find(t => t.classification === "Progress").name;
     const marker = addLogoMarker(
@@ -29,7 +30,15 @@ export function setFeed(newFeed) {
       zoningName,
       progressName
     )
-		activeMarkers.push(marker);
-	});
+    activeMarkers.push(marker);
+  });
 
+}
+
+export function getFeedShown() {
+  return feedShown;
+}
+
+export function setFeedShown(newFeedShown) {
+  feedShown = newFeedShown;
 }

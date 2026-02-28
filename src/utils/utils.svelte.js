@@ -1,6 +1,8 @@
 import maplibregl from "maplibre-gl";
 import { ZONING_ICON_MAP, CONSTRUCTION_ICON_MAP } from "./icon_map.svelte.js";
 
+import { getFeed, setFeed, setFeedShown } from '../states/feed.svelte.js';
+
 export function _setMarkerBasedOnTags(zoningTag, progressTag) {
   const zone = ZONING_ICON_MAP[zoningTag];
   const construction = CONSTRUCTION_ICON_MAP[progressTag]
@@ -36,9 +38,27 @@ export function addLogoMarker(map, lng, lat, zoningTag, progressTag) {
   el.style.backgroundRepeat = "no-repeat, no-repeat";
   el.style.backgroundSize = "16px 16px, 16px 16px";
   el.style.backgroundPosition = "left center, right center";
+  el.style.cursor = "pointer";
 
   el.addEventListener("click", () => {
-    console.log("Logo marker clicked:", lng, lat);
+    setFeedShown(true);
+
+    const updatedFeed = getFeed().map(item => {
+      if (item.longitude === lng && item.latitude === lat) {
+        return {
+          ...item,
+          highlighted: true
+        };
+      }
+      else {
+        return {
+          ...item,
+          highlighted: false
+        }
+      }
+    });
+
+    setFeed(updatedFeed);
   });
 
   return new maplibregl.Marker({ element: el })
